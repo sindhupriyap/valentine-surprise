@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Happy Valentine's Day 💖</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    text-align:center;
+    background: linear-gradient(135deg,#ff9a9e,#fecfef);
+    overflow:hidden;
+    color:white;
+}
+
+.container{
+    margin-top:120px;
+    position:relative;
+    z-index:2;
+}
+
+input{
+    padding:12px;
+    border-radius:25px;
+    border:none;
+    margin:10px;
+    text-align:center;
+    width:260px;
+}
+
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    background:#ff4d6d;
+    color:white;
+    font-weight:bold;
+    font-size:16px;
+}
+
+button:hover{
+    background:#ff1e4d;
+}
+
+.link{
+    font-size:14px;
+    cursor:pointer;
+    text-decoration:underline;
+    margin-top:10px;
+    display:inline-block;
+}
+
+.hintBox{
+    margin-top:8px;
+    font-size:14px;
+    display:none;
+    opacity:0.9;
+}
+
+.bulb{
+    cursor:pointer;
+    margin-left:8px;
+}
+
+/* Floating hearts */
+.heart{
+    position:absolute;
+    bottom:-20px;
+    font-size:20px;
+    animation:floatUp 6s linear infinite;
+    opacity:0.7;
+}
+
+@keyframes floatUp{
+    0%{transform:translateY(0); opacity:1;}
+    100%{transform:translateY(-900px); opacity:0;}
+}
+
+/* Popup */
+.popup{
+    position:fixed;
+    top:30px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:15px 25px;
+    border-radius:20px;
+    font-weight:bold;
+    z-index:10;
+    animation:fadeOut 3s forwards;
+}
+
+.success{ background:#2ecc71; }
+.error{ background:#e74c3c; }
+
+@keyframes fadeOut{
+    0%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0;}
+}
+
+/* Confetti Canvas */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+    z-index:5;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="container" id="content">
+<h1>Happy Valentine's Day 💖</h1>
+<p>Access only for my Sweetheart</p>
+
+<input id="username" placeholder="Enter Username"><br>
+<input id="password" type="password" placeholder="Enter Password"><br>
+
+<button onclick="login()">Login</button><br>
+<span class="link" onclick="forgotPassword()">Forgot password?</span>
+</div>
+
+<audio autoplay loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8d0f5a5f4.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let step=0;
+
+const questions=[
+{q:"1. What is the name of the dress you saw me first?",a:"peacock",h:"You better know it 😉"},
+{q:"2. My favorite hero?",a:"tom",h:"Not the usual hero you think"},
+{q:"3. My favorite part of you?",a:"Ears",h:"The ones you never use when I speak 😜"},
+{q:"4. My favorite time of the day?",a:"Tea Time",h:"Do not say YouTube Shorts 😏"},
+{q:"5. My favorite emoji?",a:"💩",h:"Dedicated to you 💕"}
+];
+
+const successMessages=[
+"Memory level: impressive 😉",
+"Correct. That hero wins every time ❤️",
+"You finally listened properly 😜",
+"Perfect. Tea time approved ☕",
+"Of course. Dedicated to you 💕"
+];
+
+function showPopup(message,type){
+let div=document.createElement("div");
+div.className="popup "+type;
+div.innerHTML=message;
+document.body.appendChild(div);
+setTimeout(()=>div.remove(),3000);
+}
+
+function forgotPassword(){
+showPopup("😒 Say sorry 3 times. I will remind you.", "error");
+}
+
+function login(){
+let u=document.getElementById("username").value.trim().toLowerCase();
+let p=document.getElementById("password").value.trim();
+
+if(u==="vivek.somakumar@mypoopie.com" && p==="16112025"){
+launchConfetti();
+showPopup("Access granted 💖", "success");
+setTimeout(()=>nextQuestion(),1000);
+}else{
+showPopup("Wrong credentials 😏 Try again.", "error");
+}
+}
+
+function nextQuestion(){
+if(step<questions.length){
+let q=questions[step];
+document.getElementById("content").innerHTML=`
+<h2>${q.q} <span class="bulb" onclick="toggleHint()">💡</span></h2>
+<div class="hintBox" id="hint">${q.h}</div>
+<input id="answer" placeholder="Type your answer"><br><br>
+<button onclick="checkAnswer()">Submit</button>
+`;
+}else{
+valentine();
+}
+}
+
+function toggleHint(){
+let hint=document.getElementById("hint");
+hint.style.display=hint.style.display==="block"?"none":"block";
+}
+
+function checkAnswer(){
+let ans=document.getElementById("answer").value.trim().toLowerCase();
+if(ans===questions[step].a.toLowerCase()){
+launchConfetti();
+showPopup(successMessages[step], "success");
+step++;
+setTimeout(()=>nextQuestion(),1000);
+}else{
+showPopup("Nope 😏 Think properly, Tester.", "error");
+}
+}
+
+function valentine(){
+document.getElementById("content").innerHTML=`
+<h1>Final Question 💘</h1>
+<h2>Will You Be My Valentine?</h2><br>
+<button onclick="finalYes()">YES 💖</button>
+<button id="noBtn" onmouseover="moveNo()">NO 😜</button>
+`;
+}
+
+function moveNo(){
+let btn=document.getElementById("noBtn");
+btn.style.position="absolute";
+btn.style.left=Math.random()*(window.innerWidth-100)+"px";
+btn.style.top=Math.random()*(window.innerHeight-100)+"px";
+}
+
+function finalYes(){
+launchConfetti(true);
+document.getElementById("content").innerHTML=`
+<h1 style="margin-top:180px;">
+Now follow the final clue, my love 💕<br><br>
+Step through the main door and head outside,<br>
+A quiet black bag waits there… with your surprise tucked inside. 🎁
+</h1>`;
+}
+
+/* Floating hearts */
+function createHeart(){
+const heart=document.createElement("div");
+heart.classList.add("heart");
+heart.innerHTML="💖";
+heart.style.left=Math.random()*window.innerWidth+"px";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),6000);
+}
+setInterval(createHeart,300);
+
+/* ORIGINAL BOX CONFETTI */
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let pieces=[];
+
+function launchConfetti(big=false){
+let count=big?250:120;
+for(let i=0;i<count;i++){
+pieces.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*6+4
+});
+}
+setTimeout(()=>pieces=[],1200);
+}
+
+function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+for(let i=0;i<pieces.length;i++){
+ctx.fillStyle="hsl("+Math.random()*360+",100%,70%)";
+ctx.fillRect(pieces[i].x,pieces[i].y,pieces[i].r,pieces[i].r);
+pieces[i].y+=4;
+}
+requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
